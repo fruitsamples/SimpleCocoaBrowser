@@ -1,7 +1,7 @@
 /*
      File: FileSystemNode.m
  Abstract: An abstract wrapper node around the file system.
-  Version: 1.0
+  Version: 1.1
  
  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
  Inc. ("Apple") in consideration of your agreement to the following
@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2009 Apple Inc. All Rights Reserved.
+ Copyright (C) 2011 Apple Inc. All Rights Reserved.
  
  */
 
@@ -52,7 +52,7 @@
 @implementation FileSystemNode
 
 - (id)initWithURL:(NSURL *)url {
-    if ((self = [super init])) {
+    if (self = [super init]) {
         _url = [url retain];
     }
     return self;
@@ -74,11 +74,23 @@
 
 - (NSString *)displayName {
     id value = nil;
-    NSError *error;
-    if ([_url getResourceValue:&value forKey:NSURLLocalizedNameKey error:&error]) {
-        return value;
+    NSError *error = nil;
+    BOOL success = NO;
+    
+    success = [_url getResourceValue:&value forKey:NSURLLocalizedNameKey error:&error];
+    if (success && !value) { //If we got a nil value for the localized name, we will try the non-localized name
+	success = [_url getResourceValue:&value forKey:NSURLNameKey error:&error];
+    }
+    
+    if (success) {
+	if (value) {
+	    return value;
+	} else {
+	    return @""; //An empty string is more appropriate than nil
+	}
+	
     } else {
-        return [error localizedDescription];
+	return [error localizedDescription];
     }
 }
 
@@ -105,7 +117,7 @@
         
         NSString *parentPath = [_url path];
         NSArray *contentsAtPath = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:parentPath error:NULL];
-
+	
 	if (contentsAtPath) {	// We don't deal with the error
 	    for (NSString *filename in contentsAtPath) {
 		// Use the filename as a key and see if it was around and reuse it, if possible

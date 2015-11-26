@@ -1,7 +1,7 @@
 /*
      File: AppController.m
  Abstract: Application Controller object, and the NSBrowser delegate. An instance of this object is in the MainMenu.xib.
-  Version: 1.0
+  Version: 1.1
  
  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
  Inc. ("Apple") in consideration of your agreement to the following
@@ -41,7 +41,7 @@
  STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  
- Copyright (C) 2009 Apple Inc. All Rights Reserved.
+ Copyright (C) 2011 Apple Inc. All Rights Reserved.
  
  */
 
@@ -64,7 +64,6 @@
 
 // This method is optional, but makes the code much easier to understand
 - (id)rootItemForBrowser:(NSBrowser *)browser {
-#pragma unused (browser)
     if (_rootNode == nil) {
         _rootNode = [[FileSystemNode alloc] initWithURL:[NSURL fileURLWithPath:@"/"]];
     }
@@ -72,25 +71,21 @@
 }
 
 - (NSInteger)browser:(NSBrowser *)browser numberOfChildrenOfItem:(id)item {
-#pragma unused (browser)
     FileSystemNode *node = (FileSystemNode *)item;
     return node.children.count;
 }
 
 - (id)browser:(NSBrowser *)browser child:(NSInteger)index ofItem:(id)item {
-#pragma unused (browser)
     FileSystemNode *node = (FileSystemNode *)item;
     return [node.children objectAtIndex:index];
 }
 
 - (BOOL)browser:(NSBrowser *)browser isLeafItem:(id)item {
-#pragma unused (browser)
     FileSystemNode *node = (FileSystemNode *)item;
     return !node.isDirectory;
 }
 
 - (id)browser:(NSBrowser *)browser objectValueForItem:(id)item {
-#pragma unused (browser)
     FileSystemNode *node = (FileSystemNode *)item;
     return node.displayName;
 }
